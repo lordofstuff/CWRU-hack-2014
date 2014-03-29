@@ -97,8 +97,30 @@ public class Utils {
 	}
 
 	public static float getLevelTolerance() {
-		// TODO Auto-generated method stub
 		return 1;
 	}
+	
+	//lots of master switches, basically
+	boolean isXposedPartOn() {
+		return true;
+	}
+	
+	static boolean isLayingFeatureOn() {
+		return true;
+	}
+	
+	static boolean isWalkingFeatureOn() {
+		return true;
+	}
+	
+	static boolean isSoundSampleOn() {
+		return true;
+	}
+	
+	static boolean isRingtoneChangeOn() {
+		return true;
+	}
+	
+	
 
 }

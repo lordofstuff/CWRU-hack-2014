@@ -23,12 +23,13 @@ public class AudioHook implements IXposedHookLoadPackage{
 			//XposedBridge.log("in package: " + lpparam.packageName);
 			return;
 		}
-			
+
 		//need this as parameter for hooking. 
 		Class connectionClass = findClass("com.android.internal.telephony.Connection", lpparam.classLoader);
 
 		findAndHookMethod("com.android.phone.CallNotifier", lpparam.classLoader, "startIncomingCallQuery", connectionClass, hook); 
-		findAndHookMethod("com.android.phone.CallNotifier", lpparam.classLoader, "onCustomRingQueryComplete", connectionClass, hook2);
+		//this next method signature differs slightly between 4.3 and 4.4. in 4.3 there is no parameter. 
+		findAndHookMethod("com.android.phone.CallNotifier", lpparam.classLoader, "onCustomRingQueryComplete",/* connectionClass,*/ hook2);
 
 	}
 
@@ -39,41 +40,52 @@ public class AudioHook implements IXposedHookLoadPackage{
 			//first, get the context though
 			Object thisThing = param.thisObject;
 			context = (Context) getObjectField(thisThing, "mApplication");
-			//start polling accelerometer
-			Thread t = new Thread(runner);
-			//poll audio
-			recorder record = new recorder();
-			short[] array = record.record(1);
-			double[] results = Processing.amplitude_ratio(array, (short) recorder.RECORDER_SAMPLERATE, (short) 30000);
+			Thread t = null;
+			if (Utils.isWalkingFeatureOn() || Utils.isLayingFeatureOn()) {
+				//start polling accelerometer
+				t = new Thread(runner);
+			}
+			short[] array = null;
+			double[] results = null;
+			if (Utils.isSoundSampleOn() || Utils.isRingtoneChangeOn()) {
+				//poll audio
+				recorder record = new recorder();
+				array = record.record(1);
+				results = Processing.amplitude_ratio(array, (short) recorder.RECORDER_SAMPLERATE, (short) 30000);
+			}
 			//Utils.updateVolume(results[1], results[0], context);
 			Utils.updateSoundSettings(context, (float) results[0], (float) results[1], walkingLaying[0], walkingLaying[1]);
-			//stop recording the  motion and  get a result there
-			t.start();
+			if (t!= null) {
+				//stop recording the  motion and  get a result there
+				t.start();
+			}
 			XposedBridge.log("AudioThingy! walking: " + walkingLaying[0] + ", volume: " + results[0] + " Laying: " + walkingLaying[1]);
 		}
 		@Override
 		protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-			
+
 		}
 	};
-	
+
 	XC_MethodHook hook2 = new XC_MethodHook() {
 		@Override
 		protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-			XposedBridge.log("This is where I would change the ringtone.");
-			// http://grepcode.com/file/repository.grepcode.com/java/ext/com.google.android/android-apps/4.4.2_r1/com/android/phone/CallNotifier.java#CallNotifier.onCustomRingQueryComplete%28com.android.internal.telephony.Connection%29
-//			Ringer r = mRinger;
-//			r.setCustomRingtoneUri(ci.contactRingtoneUri);
+			if (Utils.isRingtoneChangeOn()) {
+				XposedBridge.log("This is where I would change the ringtone.");
+				// http://grepcode.com/file/repository.grepcode.com/java/ext/com.google.android/android-apps/4.4.2_r1/com/android/phone/CallNotifier.java#CallNotifier.onCustomRingQueryComplete%28com.android.internal.telephony.Connection%29
+				//			Ringer r = mRinger;
+				//			r.setCustomRingtoneUri(ci.contactRingtoneUri);
+			}
 		}
-		
+
 		@Override
 		protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-			
+
 		}
-		
+
 	};
-	
-	
+
+
 
 	Runnable runner = new Runnable() {
 		MotionSense sense;
