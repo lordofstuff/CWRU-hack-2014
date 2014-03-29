@@ -29,7 +29,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/button1"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="64dp"
+        android:layout_marginTop="14dp"
         android:onClick="testMotion"
         android:text="test motion sensing" />
 
@@ -38,9 +38,20 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/button2"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="54dp"
+        android:layout_marginLeft="66dp"
+        android:layout_marginTop="29dp"
+        android:layout_toRightOf="@+id/textView1"
         android:onClick="settingsClick"
         android:text="Settings" />
+
+    <Button
+        android:id="@+id/button4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/button3"
+        android:layout_marginLeft="61dp"
+        android:layout_toRightOf="@+id/button3"
+        android:onClick="startStopService"
+        android:text="Start Service" />
 
 </RelativeLayout>

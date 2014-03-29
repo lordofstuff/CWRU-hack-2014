@@ -58,6 +58,7 @@ public class AudioHook implements IXposedHookLoadPackage{
 //			if (isWalkingFeatureOn() || isLayingFeatureOn()) {
 				//start polling accelerometer
 				t = new Thread(runner);
+				t.start();
 //			}
 			short[] array = null;
 			double[] results = null;

@@ -9,8 +9,6 @@ import android.preference.PreferenceManager;
 
 public class Utils {
 	
-	static Context context;
-	
 	
 	static void updateVolume(double lowToHigh, double volume, Context context) {
 		//get transformed volume (translate a noise level to a volume on the device
@@ -68,7 +66,6 @@ public class Utils {
 //	private void saveToFile(short[] array) {
 //	try {
 //		OutputStreamWriter outputStreamWriter = new OutputStreamWriter(openFileOutput("TestData.txt", Context.MODE_PRIVATE));
-//		//	        outputStreamWriter.write("poop");
 //		Log.d(TAG, "array length: " + array.length);
 //		for (short s: array) {
 //			outputStreamWriter.write(Short.toString(s));
@@ -82,10 +79,14 @@ public class Utils {
 //}
 	
 	public static void updateSoundSettings(Context context, float amplitude, float highToLow, boolean walking, boolean laying, boolean fromXposed) {
-		if (fromXposed || (isLayingFeatureOn(context) && laying)) {
-			//act according to user settings
-			XposedBridge.log("laying: " + laying);
+		if (fromXposed) {
+			if (isLayingFeatureOn(context) && laying) {
+				//act according to user settings
+				XposedBridge.log("laying: " + laying);
+			}
 		}
+			
+		
 		PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
 		boolean isScreenOn = pm.isScreenOn();
 		if (isScreenOn) {
