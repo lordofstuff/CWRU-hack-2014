@@ -89,7 +89,6 @@ public class MainActivity extends Activity {
 		double[] results = Processing.amplitude_ratio(array, (short) recorder.RECORDER_SAMPLERATE, (short) 30000);
 		text.setText(Double.toString(results[0]));
 		Utils.updateVolume(results[1], results[0], this);
-		
 	}
 
 	public void testMotion(View view) {
@@ -99,89 +98,16 @@ public class MainActivity extends Activity {
 			((Button) view).setText("recording");
 		}
 		else {
-			Boolean walking = sense.isWalking(sense.pollStop());
-			Log.d(TAG, "walking: " + walking);
+			boolean[] walkingLaying = sense.isWalking(sense.pollStop());
+			Log.d(TAG, "walking: " + walkingLaying[0]);
 			TextView text = ((TextView) findViewById(R.id.textView1));
 			((Button) view).setText("test motion sensor");
-			text.setText("Walking: " + walking);
+			text.setText("Walking: " + walkingLaying[0] + " Laying: " + walkingLaying[1]);
 		}
 	}
 
-//	private void saveToFile(short[] array) {
-//		try {
-//			OutputStreamWriter outputStreamWriter = new OutputStreamWriter(openFileOutput("TestData.txt", Context.MODE_PRIVATE));
-//			//	        outputStreamWriter.write("poop");
-//			Log.d(TAG, "array length: " + array.length);
-//			for (short s: array) {
-//				outputStreamWriter.write(Short.toString(s));
-//				outputStreamWriter.write("\n");
-//			}
-//			outputStreamWriter.close();
-//		}
-//		catch (IOException e) {
-//			Log.e("Exception", "File write failed: " + e.toString());
-//		} 
-//	}
 
-//	/**
-//	 * called from the analysis method after analysis is complete. 
-//	 * @param lowToHigh the ratio of low frequencies to high ones. 
-//	 * @param volume the average volume from 0 to 1
-//	 */
-//	public void updateVolume(double lowToHigh, double volume) {
-//		//get transformed volume (translate a noise level to a volume on the device
-//		int deviceVolume = transformVolume(volume, AudioManager.STREAM_RING);
-//		setVolume(AudioManager.STREAM_RING, deviceVolume);
-//
-//	}
 
-//	private int transformVolume(double volume, int stream) {
-//		
-//		Log.d(TAG, "volume: " + volume);
-//		final AudioManager audio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-//		int maxVolume = audio.getStreamMaxVolume(stream);
-//		double normVolume = ((volume - getMinVol()) / (getMaxVol() - getMinVol()));
-//		return  round((normVolume * maxVolume));
-//	}
 
-//	private int round(double d) {
-//		if ((d * 100) % 100 < 50) {
-//			return (int) d;
-//		}
-//		return (int) d + 1;
-//	}
-
-//	private int getMaxVol() {
-//		// TODO Auto-generated method stub
-//		return 12;
-//	}
-//
-//	private int getMinVol() {
-//		// TODO Auto-generated method stub
-//		return 8;
-//	}
-//
-//	private void setVolume(int stream, int volume) {
-//		final AudioManager audio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-//
-//		int maxVolume = audio.getStreamMaxVolume(stream);
-//		Log.d(TAG, "max volume on ringer stream" + maxVolume);
-//		if (volume > maxVolume) {
-//			volume = maxVolume;
-//		}
-//		else if (volume < 0) {
-//			volume = 0;
-//		}
-//
-//		int flags = AudioManager.FLAG_PLAY_SOUND;
-//		flags = flags | AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE;
-//		flags = flags | AudioManager.FLAG_SHOW_UI;
-//		flags = flags | AudioManager.FLAG_VIBRATE;
-//
-//		/*
-//		 * apply volume to the system
-//		 */
-//		 audio.setStreamVolume(stream, volume, flags);
-//	}
 
 }

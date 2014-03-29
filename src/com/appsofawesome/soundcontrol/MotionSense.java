@@ -17,6 +17,8 @@ public class MotionSense implements SensorEventListener {
 	private Sensor mAccelerometer;
 	private ArrayList<Float> processedValues;
 	public boolean recording = false;
+	boolean firstPoll = true;
+	boolean laying = false;
 
 	public synchronized void pollMotion(Context context) {
 		sm = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
@@ -48,14 +50,14 @@ public class MotionSense implements SensorEventListener {
 		array[array.length-1] = array[array.length -2];
 	}
 
-	public boolean isWalking(float[] derived) {
+	public boolean[] isWalking(float[] derived) {
 		for (float f: derived) {
 			Log.d(TAG, "derived accel: " + f);
 			if (f > threshold) {
-				return true;
+				return new boolean[] {true, laying};
 			}
 		}
-		return false;
+		return new boolean[] {false, laying};
 	}
 
 	@Override
@@ -66,11 +68,16 @@ public class MotionSense implements SensorEventListener {
 
 	@Override
 	public void onSensorChanged(SensorEvent event) {
+		if (firstPoll) {
+			//check if it is laying flat on the front or back
+			float tolerance = Utils.getLevelTolerance();
+			if (Math.abs(event.values[0]) < tolerance && Math.abs(event.values[1]) < tolerance 
+					&& Math.abs(event.values[2]) > 9.81 - tolerance && Math.abs(event.values[2]) < 9.81 + tolerance) {
+				laying = true;
+				
+			}
+			firstPoll = false;
+		}
 		processedValues.add((float) Math.sqrt((Math.pow(event.values[0], 2) + Math.pow(event.values[1], 2) + Math.pow(event.values[2], 2))));
-	}
-
-	public void pollMotion() {
-		// TODO Auto-generated method stub
-		
 	}
 }

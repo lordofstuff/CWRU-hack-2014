@@ -15,7 +15,7 @@ import static de.robv.android.xposed.XposedHelpers.getObjectField;
 public class AudioHook implements IXposedHookLoadPackage{
 
 	Context context = null;
-	boolean walking;
+	boolean[] walkingLaying;
 
 	@Override
 	public void handleLoadPackage(LoadPackageParam lpparam) throws Throwable {
@@ -28,7 +28,7 @@ public class AudioHook implements IXposedHookLoadPackage{
 		Class connectionClass = findClass("com.android.internal.telephony.Connection", lpparam.classLoader);
 
 		findAndHookMethod("com.android.phone.CallNotifier", lpparam.classLoader, "startIncomingCallQuery", connectionClass, hook); 
-
+		findAndHookMethod("com.android.phone.CallNotifier", lpparam.classLoader, "onCustomRingQueryComplete", connectionClass, hook2);
 
 	}
 
@@ -45,15 +45,35 @@ public class AudioHook implements IXposedHookLoadPackage{
 			recorder record = new recorder();
 			short[] array = record.record(1);
 			double[] results = Processing.amplitude_ratio(array, (short) recorder.RECORDER_SAMPLERATE, (short) 30000);
-			Utils.updateVolume(results[1], results[0], context);
+			//Utils.updateVolume(results[1], results[0], context);
+			Utils.updateSoundSettings(context, (float) results[0], (float) results[1], walkingLaying[0], walkingLaying[1]);
+			//stop recording the  motion and  get a result there
 			t.start();
-			XposedBridge.log("AudioThingy! walking: " + walking + ", volume: " + results[1]);
+			XposedBridge.log("AudioThingy! walking: " + walkingLaying[0] + ", volume: " + results[0] + " Laying: " + walkingLaying[1]);
 		}
 		@Override
 		protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-
+			
 		}
 	};
+	
+	XC_MethodHook hook2 = new XC_MethodHook() {
+		@Override
+		protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+			XposedBridge.log("This is where I would change the ringtone.");
+			// http://grepcode.com/file/repository.grepcode.com/java/ext/com.google.android/android-apps/4.4.2_r1/com/android/phone/CallNotifier.java#CallNotifier.onCustomRingQueryComplete%28com.android.internal.telephony.Connection%29
+//			Ringer r = mRinger;
+//			r.setCustomRingtoneUri(ci.contactRingtoneUri);
+		}
+		
+		@Override
+		protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+			
+		}
+		
+	};
+	
+	
 
 	Runnable runner = new Runnable() {
 		MotionSense sense;
@@ -65,14 +85,9 @@ public class AudioHook implements IXposedHookLoadPackage{
 				//((Button) view).setText("recording");
 			}
 			else {
-				walking = sense.isWalking(sense.pollStop());
-
+				walkingLaying = sense.isWalking(sense.pollStop());
 			}		
 		}	
 	};
-
-	//	
-
-
 
 }
