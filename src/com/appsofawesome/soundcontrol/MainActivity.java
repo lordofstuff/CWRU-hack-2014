@@ -191,7 +191,7 @@ public class MainActivity extends Activity {
 			//start the service
 			long mins = prefs.getInt("sync_Frequency", 10);
 			sched = new ScheduledThreadPoolExecutor(5);
-			sched.scheduleAtFixedRate(runner1, 10, /*mins*/ 10, TimeUnit.SECONDS/*MINUTES*/);
+			sched.scheduleAtFixedRate(runner1, 1, mins, TimeUnit.MINUTES);
 			sched.execute(runner1);
 			startService(new Intent(context, sched.getClass()));
 			//change the text,
