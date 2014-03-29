@@ -1,8 +1,17 @@
 package com.appsofawesome.soundcontrol;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+
 import android.app.Activity;
 import android.app.ActionBar;
 import android.app.Fragment;
+import android.content.Context;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -69,27 +78,71 @@ public class MainActivity extends Activity {
 		recorder record = new recorder();
 		Log.d(TAG, "starting record");
 		short[] array = record.record(1);
-		TextView text = ((TextView) findViewById(R.id.textView1));	
-		for (short s: array) {
-			if (s != 0) {
-				//text.append(Short.toString(s));
-				Log.d(TAG, Short.toString(s));
-			}	
-			
-		}
-		//text.invalidate();
+		//TextView text = ((TextView) findViewById(R.id.textView1));	
+		
+		//save data:
+		saveToFile(array);
+		//call Rebecca's method TODO
+		updateVolume(20, .5);
 		Log.d(TAG, "should be done by now");
 	}
+	
+	private void saveToFile(short[] array) {
+		try {
+	        OutputStreamWriter outputStreamWriter = new OutputStreamWriter(openFileOutput("TestData.txt", Context.MODE_PRIVATE));
+//	        outputStreamWriter.write("poop");
+	        Log.d(TAG, "array length: " + array.length);
+	        for (short s: array) {
+				outputStreamWriter.write(Short.toString(s));
+				outputStreamWriter.write("\n");
+			}
+	        outputStreamWriter.close();
+	    }
+	    catch (IOException e) {
+	        Log.e("Exception", "File write failed: " + e.toString());
+	    } 
+	}
 
-	//	private String arrayToString(short[] array) {
-	//		StringBuilder sb = new StringBuilder();
-	//		int i1 = 0;
-	//		int i2 = 0;
-	//		while (i1 < 100) {
-	//			if array[]
-	//			sb.append(Short.toString(array[i]));
-	//		}
-	//		return sb.toString();
-	//	}
+	/**
+	 * called from the analysis method after analysis is complete. 
+	 * @param lowToHigh the ratio of low frequencies to high ones. 
+	 * @param volume the average volume from 0 to 1
+	 */
+	public void updateVolume(double lowToHigh, double volume) {
+		//get transformed volume (translate a noise level to a volume on the device
+		int deviceVolume = transformVolume(volume, AudioManager.STREAM_RING);
+		setVolume(AudioManager.STREAM_RING, deviceVolume);
+		
+	}
+	
+	private int transformVolume(double volume, int stream) {
+		//for now, just return the value. this may be updated later.
+		final AudioManager audio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+		int maxVolume = audio.getStreamMaxVolume(stream);
+		return (int) (volume * maxVolume);
+	}
 
+	private void setVolume(int stream, int volume) {
+        final AudioManager audio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+
+        int maxVolume = audio.getStreamMaxVolume(stream);
+        Log.d(TAG, "max volume on ringer stream" + maxVolume);
+        if (volume > maxVolume) {
+            volume = maxVolume;
+        }
+        else if (volume < 0) {
+            volume = 0;
+        }
+
+        int flags = AudioManager.FLAG_PLAY_SOUND;
+        flags = flags | AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE;
+        flags = flags | AudioManager.FLAG_SHOW_UI;
+        flags = flags | AudioManager.FLAG_VIBRATE;
+
+        /*
+         * apply volume to the system
+         */
+        audio.setStreamVolume(stream, volume, flags);
+    }
+	
 }

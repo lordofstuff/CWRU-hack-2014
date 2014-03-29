@@ -20,12 +20,12 @@ public class recorder {
 	private boolean isRecording = false;
 	private Object lock = new Object();
 
-	int BufferElements2Rec = 1024; // want to play 2048 (2K) since 2 bytes we use only 1024
+	int BufferElements2Rec = 8000;//1024; // want to play 2048 (2K) since 2 bytes we use only 1024
 	int BytesPerElement = 2; // 2 bytes in 16bit format
 
 
 	public synchronized short[] record(double seconds) {
-		final short[] array = new short[RECORDER_SAMPLERATE * getRecordTime()];
+		final short[] array = new short[RECORDER_SAMPLERATE * getRecordTime() /1000];
 		AudioRecord recorder = startRecording();
 		//wait one seconds ish
 		try {
