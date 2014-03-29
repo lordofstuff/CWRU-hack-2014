@@ -19,6 +19,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import android.os.Build;
 
@@ -81,13 +82,13 @@ public class MainActivity extends Activity {
 		recorder record = new recorder();
 		Log.d(TAG, "starting record");
 		short[] array = record.record(1);
-		//TextView text = ((TextView) findViewById(R.id.textView1));	
+		TextView text = ((TextView) findViewById(R.id.textView1));	
 
 		//save data: (if needed)
 		//saveToFile(array);
-		//call Rebecca's method TODO
-		// method(array, sampleRate, short cutoffFreq)
-		updateVolume(20, .5);
+		double[] results = Processing.amplitude_ratio(array, (short) recorder.RECORDER_SAMPLERATE, (short) 30000);
+		text.setText(Double.toString(results[0]));
+		updateVolume(results[1], results[0]);
 		Log.d(TAG, "should be done by now");
 	}
 
@@ -95,28 +96,32 @@ public class MainActivity extends Activity {
 		if (sense == null || !sense.recording) {
 			sense = new MotionSense();
 			sense.pollMotion(this);
+			((Button) view).setText("recording");
 		}
 		else {
 			Boolean walking = sense.isWalking(sense.pollStop());
 			Log.d(TAG, "walking: " + walking);
+			TextView text = ((TextView) findViewById(R.id.textView1));
+			((Button) view).setText("test motion sensor");
+			text.setText("Walking: " + walking);
 		}
 	}
 
-	private void saveToFile(short[] array) {
-		try {
-			OutputStreamWriter outputStreamWriter = new OutputStreamWriter(openFileOutput("TestData.txt", Context.MODE_PRIVATE));
-			//	        outputStreamWriter.write("poop");
-			Log.d(TAG, "array length: " + array.length);
-			for (short s: array) {
-				outputStreamWriter.write(Short.toString(s));
-				outputStreamWriter.write("\n");
-			}
-			outputStreamWriter.close();
-		}
-		catch (IOException e) {
-			Log.e("Exception", "File write failed: " + e.toString());
-		} 
-	}
+//	private void saveToFile(short[] array) {
+//		try {
+//			OutputStreamWriter outputStreamWriter = new OutputStreamWriter(openFileOutput("TestData.txt", Context.MODE_PRIVATE));
+//			//	        outputStreamWriter.write("poop");
+//			Log.d(TAG, "array length: " + array.length);
+//			for (short s: array) {
+//				outputStreamWriter.write(Short.toString(s));
+//				outputStreamWriter.write("\n");
+//			}
+//			outputStreamWriter.close();
+//		}
+//		catch (IOException e) {
+//			Log.e("Exception", "File write failed: " + e.toString());
+//		} 
+//	}
 
 	/**
 	 * called from the analysis method after analysis is complete. 
@@ -131,10 +136,29 @@ public class MainActivity extends Activity {
 	}
 
 	private int transformVolume(double volume, int stream) {
-		//for now, just return the value. this may be updated later.
+		
+		Log.d(TAG, "volume: " + volume);
 		final AudioManager audio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 		int maxVolume = audio.getStreamMaxVolume(stream);
-		return (int) (volume * maxVolume);
+		double normVolume = ((volume - getMinVol()) / (getMaxVol() - getMinVol()));
+		return  round((normVolume * maxVolume));
+	}
+
+	private int round(double d) {
+		if ((d * 100) % 100 < 50) {
+			return (int) d;
+		}
+		return (int) d + 1;
+	}
+
+	private int getMaxVol() {
+		// TODO Auto-generated method stub
+		return 12;
+	}
+
+	private int getMinVol() {
+		// TODO Auto-generated method stub
+		return 8;
 	}
 
 	private void setVolume(int stream, int volume) {
