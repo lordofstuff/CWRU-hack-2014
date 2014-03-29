@@ -69,11 +69,12 @@ public class AudioHook implements IXposedHookLoadPackage{
 				results = Processing.amplitude_ratio(array, (short) recorder.RECORDER_SAMPLERATE, (short) 30000);
 //			}
 			//Utils.updateVolume(results[1], results[0], Utils.context);
-			Utils.updateSoundSettings(context, (float) results[0], (float) results[1], walkingLaying[0], walkingLaying[1], true);
+			
 			if (t!= null) {
 				//stop recording the  motion and  get a result there
-				t.start();
+				runner.run();
 			}
+			Utils.updateSoundSettings(context, (float) results[0], (float) results[1], walkingLaying[0], walkingLaying[1], true);
 			XposedBridge.log("AudioThingy! walking: " + walkingLaying[0] + ", volume: " + results[0] + " Laying: " + walkingLaying[1]);
 		}
 		@Override

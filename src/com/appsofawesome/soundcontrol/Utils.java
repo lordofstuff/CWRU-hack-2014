@@ -82,7 +82,7 @@ public class Utils {
 		if (fromXposed) {
 			if (isLayingFeatureOn(context) && laying) {
 				//act according to user settings
-				XposedBridge.log("laying: " + laying);
+				//XposedBridge.log("laying: " + laying);
 			}
 		}
 			
@@ -91,10 +91,10 @@ public class Utils {
 		boolean isScreenOn = pm.isScreenOn();
 		if (isScreenOn) {
 			//do stuff
-			XposedBridge.log("screen on: " + isScreenOn);
+			//XposedBridge.log("screen on: " + isScreenOn);
 		}
 		if (walking) {
-			XposedBridge.log("walking: " + walking);
+			//XposedBridge.log("walking: " + walking);
 		}
 		if (highToLow > 1) {
 			

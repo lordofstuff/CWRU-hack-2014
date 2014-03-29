@@ -131,7 +131,7 @@ public class MainActivity extends Activity {
 		@Override
 		public void run() {
 			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-			if (prefs.getBoolean("ServiceRunning", false)) {
+			if (ServiceRunning) {
 				//continue running
 			} else if (runOnce) {
 				runOnce = false;
@@ -157,11 +157,13 @@ public class MainActivity extends Activity {
 				array = record.record(1);
 				results = Processing.amplitude_ratio(array, (short) recorder.RECORDER_SAMPLERATE, (short) 30000);
 			}
-			Utils.updateSoundSettings(context, (float) results[0], (float) results[1], walkingLaying[0], walkingLaying[1], true);
 			if (t!= null) {
 				//stop recording the  motion and  get a result there
-				t.start();
+				
+				runner.run();
+				
 			}
+			Utils.updateSoundSettings(context, (float) results[0], (float) results[1], walkingLaying[0], walkingLaying[1], false);
 		};
 
 		Runnable runner = new Runnable() {
@@ -181,10 +183,11 @@ public class MainActivity extends Activity {
 
 
 	};
+	private boolean ServiceRunning = false;
 	
 	public void startStopService(View view) {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-		if (prefs.getBoolean("ServiceRunning", false)) {
+		if (!ServiceRunning) {
 			//start the service
 			long mins = prefs.getInt("sync_Frequency", 10);
 			sched = new ScheduledThreadPoolExecutor(5);
@@ -194,21 +197,26 @@ public class MainActivity extends Activity {
 			//change the text,
 			((TextView) view).setText("Stop Service");
 			//update preference
-			prefs.edit().putBoolean("ServiceRunning", true).commit();
+			ServiceRunning = true;
 			
 		}
 		else {
 			//stop the service
 			stopService();
+			sched.shutdownNow();
 			//change the text, 
 			((TextView) view).setText("Start Service");
 			//update preference
-			prefs.edit().putBoolean("ServiceRunning", false).commit();
+			ServiceRunning = false;
 		}
 	}
 
 	protected void stopService() {
 		super.stopService(new Intent("com.appsofawesome.soundcontrol.MainActivity$sched"));
 		
+	}
+	
+	public void testAll(View view) {
+		new Thread(runner1).start();
 	}
 }

@@ -38,12 +38,15 @@ public class MotionSense implements SensorEventListener {
 			array[i++] = f;
 		}
 		derive(array);
-		Log.d(TAG, "motion sensing data length: " + array.length);
+		//Log.d(TAG, "motion sensing data length: " + array.length);
 		recording = false;
 		return array;
 	}
 
 	private void derive(float[] array) {
+		if (array.length == 0) {
+			return;
+		}
 		for (int i = 0; i < array.length -1; i++) {
 			array[i] = array[i + 1] - array[i];
 		}
@@ -52,7 +55,7 @@ public class MotionSense implements SensorEventListener {
 
 	public boolean[] isWalking(float[] derived) {
 		for (float f: derived) {
-			Log.d(TAG, "derived accel: " + f);
+			//Log.d(TAG, "derived accel: " + f);
 			if (f > threshold) {
 				return new boolean[] {true, laying};
 			}
