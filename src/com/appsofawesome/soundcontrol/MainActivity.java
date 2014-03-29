@@ -1,17 +1,17 @@
 package com.appsofawesome.soundcontrol;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
+//import java.io.BufferedWriter;
+//import java.io.File;
+//import java.io.FileOutputStream;
+//import java.io.IOException;
+//import java.io.OutputStreamWriter;
+//import java.io.Writer;
 
 import android.app.Activity;
-import android.app.ActionBar;
+//import android.app.ActionBar;
 import android.app.Fragment;
-import android.content.Context;
-import android.media.AudioManager;
+//import android.content.Context;
+//import android.media.AudioManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,7 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.os.Build;
+//import android.os.Build;
 
 public class MainActivity extends Activity {
 
@@ -88,8 +88,8 @@ public class MainActivity extends Activity {
 		//saveToFile(array);
 		double[] results = Processing.amplitude_ratio(array, (short) recorder.RECORDER_SAMPLERATE, (short) 30000);
 		text.setText(Double.toString(results[0]));
-		updateVolume(results[1], results[0]);
-		Log.d(TAG, "should be done by now");
+		Utils.updateVolume(results[1], results[0], this);
+		
 	}
 
 	public void testMotion(View view) {
@@ -123,65 +123,65 @@ public class MainActivity extends Activity {
 //		} 
 //	}
 
-	/**
-	 * called from the analysis method after analysis is complete. 
-	 * @param lowToHigh the ratio of low frequencies to high ones. 
-	 * @param volume the average volume from 0 to 1
-	 */
-	public void updateVolume(double lowToHigh, double volume) {
-		//get transformed volume (translate a noise level to a volume on the device
-		int deviceVolume = transformVolume(volume, AudioManager.STREAM_RING);
-		setVolume(AudioManager.STREAM_RING, deviceVolume);
+//	/**
+//	 * called from the analysis method after analysis is complete. 
+//	 * @param lowToHigh the ratio of low frequencies to high ones. 
+//	 * @param volume the average volume from 0 to 1
+//	 */
+//	public void updateVolume(double lowToHigh, double volume) {
+//		//get transformed volume (translate a noise level to a volume on the device
+//		int deviceVolume = transformVolume(volume, AudioManager.STREAM_RING);
+//		setVolume(AudioManager.STREAM_RING, deviceVolume);
+//
+//	}
 
-	}
+//	private int transformVolume(double volume, int stream) {
+//		
+//		Log.d(TAG, "volume: " + volume);
+//		final AudioManager audio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+//		int maxVolume = audio.getStreamMaxVolume(stream);
+//		double normVolume = ((volume - getMinVol()) / (getMaxVol() - getMinVol()));
+//		return  round((normVolume * maxVolume));
+//	}
 
-	private int transformVolume(double volume, int stream) {
-		
-		Log.d(TAG, "volume: " + volume);
-		final AudioManager audio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-		int maxVolume = audio.getStreamMaxVolume(stream);
-		double normVolume = ((volume - getMinVol()) / (getMaxVol() - getMinVol()));
-		return  round((normVolume * maxVolume));
-	}
+//	private int round(double d) {
+//		if ((d * 100) % 100 < 50) {
+//			return (int) d;
+//		}
+//		return (int) d + 1;
+//	}
 
-	private int round(double d) {
-		if ((d * 100) % 100 < 50) {
-			return (int) d;
-		}
-		return (int) d + 1;
-	}
-
-	private int getMaxVol() {
-		// TODO Auto-generated method stub
-		return 12;
-	}
-
-	private int getMinVol() {
-		// TODO Auto-generated method stub
-		return 8;
-	}
-
-	private void setVolume(int stream, int volume) {
-		final AudioManager audio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-
-		int maxVolume = audio.getStreamMaxVolume(stream);
-		Log.d(TAG, "max volume on ringer stream" + maxVolume);
-		if (volume > maxVolume) {
-			volume = maxVolume;
-		}
-		else if (volume < 0) {
-			volume = 0;
-		}
-
-		int flags = AudioManager.FLAG_PLAY_SOUND;
-		flags = flags | AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE;
-		flags = flags | AudioManager.FLAG_SHOW_UI;
-		flags = flags | AudioManager.FLAG_VIBRATE;
-
-		/*
-		 * apply volume to the system
-		 */
-		 audio.setStreamVolume(stream, volume, flags);
-	}
+//	private int getMaxVol() {
+//		// TODO Auto-generated method stub
+//		return 12;
+//	}
+//
+//	private int getMinVol() {
+//		// TODO Auto-generated method stub
+//		return 8;
+//	}
+//
+//	private void setVolume(int stream, int volume) {
+//		final AudioManager audio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+//
+//		int maxVolume = audio.getStreamMaxVolume(stream);
+//		Log.d(TAG, "max volume on ringer stream" + maxVolume);
+//		if (volume > maxVolume) {
+//			volume = maxVolume;
+//		}
+//		else if (volume < 0) {
+//			volume = 0;
+//		}
+//
+//		int flags = AudioManager.FLAG_PLAY_SOUND;
+//		flags = flags | AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE;
+//		flags = flags | AudioManager.FLAG_SHOW_UI;
+//		flags = flags | AudioManager.FLAG_VIBRATE;
+//
+//		/*
+//		 * apply volume to the system
+//		 */
+//		 audio.setStreamVolume(stream, volume, flags);
+//	}
 
 }
