@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ActionBar;
 import android.app.Fragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -14,6 +15,8 @@ import android.os.Build;
 
 public class MainActivity extends Activity {
 
+	private static final String TAG = "TEST";
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -21,7 +24,7 @@ public class MainActivity extends Activity {
 
 		if (savedInstanceState == null) {
 			getFragmentManager().beginTransaction()
-					.add(R.id.container, new PlaceholderFragment()).commit();
+			.add(R.id.container, new PlaceholderFragment()).commit();
 		}
 	}
 
@@ -61,26 +64,32 @@ public class MainActivity extends Activity {
 			return rootView;
 		}
 	}
-	
+
 	public void Test(View view) {
 		recorder record = new recorder();
+		Log.d(TAG, "starting record");
 		short[] array = record.record(1);
 		TextView text = ((TextView) findViewById(R.id.textView1));	
 		for (short s: array) {
-			text.append(Short.toString(s));
+			if (s != 0) {
+				//text.append(Short.toString(s));
+				Log.d(TAG, Short.toString(s));
+			}	
+			
 		}
-		
+		//text.invalidate();
+		Log.d(TAG, "should be done by now");
 	}
-	
-//	private String arrayToString(short[] array) {
-//		StringBuilder sb = new StringBuilder();
-//		int i1 = 0;
-//		int i2 = 0;
-//		while (i1 < 100) {
-//			if array[]
-//			sb.append(Short.toString(array[i]));
-//		}
-//		return sb.toString();
-//	}
+
+	//	private String arrayToString(short[] array) {
+	//		StringBuilder sb = new StringBuilder();
+	//		int i1 = 0;
+	//		int i2 = 0;
+	//		while (i1 < 100) {
+	//			if array[]
+	//			sb.append(Short.toString(array[i]));
+	//		}
+	//		return sb.toString();
+	//	}
 
 }

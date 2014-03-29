@@ -18,6 +18,7 @@ public class recorder {
 	private AudioRecord recorder = null;
 	//private Thread recordingThread = null;
 	private boolean isRecording = false;
+	private Object lock = new Object();
 
 	int BufferElements2Rec = 1024; // want to play 2048 (2K) since 2 bytes we use only 1024
 	int BytesPerElement = 2; // 2 bytes in 16bit format
@@ -25,28 +26,21 @@ public class recorder {
 
 	public synchronized short[] record(double seconds) {
 		final short[] array = new short[RECORDER_SAMPLERATE * getRecordTime()];
-		Thread thread = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				AudioRecord recorder = startRecording();
-				//wait one seconds ish
-				
-				stopRecording();
-				recorder.read(array, 0, array.length);
-			}
-		});
-		thread.start();
+		AudioRecord recorder = startRecording();
+		//wait one seconds ish
 		try {
 			wait(getRecordTime());
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			//e.printStackTrace();
 		}
+		recorder.read(array, 0, array.length);
+		stopRecording();
+		
 		return array;
 	}
 
 	private int getRecordTime() {
-
 		return 1000; //1 second
 	}
 
