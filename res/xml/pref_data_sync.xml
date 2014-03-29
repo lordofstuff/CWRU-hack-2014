@@ -12,14 +12,8 @@
         android:key="sync_frequency"
         android:negativeButtonText="@null"
         android:positiveButtonText="@null"
-        android:title="@string/pref_title_sync_frequency" />
+        android:title="Poll Frquency" />
 
-    <!--
-         This preference simply launches an intent when selected. Use this UI sparingly, per
-         design guidelines.
-    -->
-    <Preference android:title="@string/pref_title_system_sync_settings" >
-        <intent android:action="android.settings.SYNC_SETTINGS" />
-    </Preference>
+    <CheckBoxPreference android:summary='"Requires root and Xposed. Updates volumes and ringtones only when you are recieving a call. "' android:title='"On Demand Updates"' android:key="xposed_switch"/>
 
 </PreferenceScreen>

@@ -2,10 +2,15 @@ package com.appsofawesome.soundcontrol;
 
 import de.robv.android.xposed.XposedBridge;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.os.PowerManager;
+import android.preference.PreferenceManager;
 
 public class Utils {
+	
+	static Context context;
+	
 	
 	static void updateVolume(double lowToHigh, double volume, Context context) {
 		//get transformed volume (translate a noise level to a volume on the device
@@ -76,8 +81,8 @@ public class Utils {
 //	} 
 //}
 	
-	public static void updateSoundSettings(Context context, float amplitude, float highToLow, boolean walking, boolean laying) {
-		if (laying) {
+	public static void updateSoundSettings(Context context, float amplitude, float highToLow, boolean walking, boolean laying, boolean fromXposed) {
+		if (fromXposed || (isLayingFeatureOn(context) && laying)) {
 			//act according to user settings
 			XposedBridge.log("laying: " + laying);
 		}
@@ -101,24 +106,29 @@ public class Utils {
 	}
 	
 	//lots of master switches, basically
-	boolean isXposedPartOn() {
-		return true;
+	boolean isXposedPartOn(Context context) {
+		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+		return preferences.getBoolean("xposed_switch", true);
 	}
 	
-	static boolean isLayingFeatureOn() {
-		return true;
+	static boolean isLayingFeatureOn(Context context) {
+		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+		return preferences.getBoolean("laying_switch", true);
 	}
 	
-	static boolean isWalkingFeatureOn() {
-		return true;
+	static boolean isWalkingFeatureOn(Context context) {
+		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+		return preferences.getBoolean("walking_switch", true);
 	}
 	
-	static boolean isSoundSampleOn() {
-		return true;
+	static boolean isSoundSampleOn(Context context) {
+		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+		return preferences.getBoolean("sound_sample_switch", true);
 	}
 	
-	static boolean isRingtoneChangeOn() {
-		return true;
+	static boolean isRingtoneChangeOn(Context context) {
+		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+		return preferences.getBoolean("frequency_switch", true);
 	}
 	
 	

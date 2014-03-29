@@ -74,7 +74,7 @@ public class MotionSense implements SensorEventListener {
 			if (Math.abs(event.values[0]) < tolerance && Math.abs(event.values[1]) < tolerance 
 					&& Math.abs(event.values[2]) > 9.81 - tolerance && Math.abs(event.values[2]) < 9.81 + tolerance) {
 				laying = true;
-				
+				//keep it from detecting anything else?
 			}
 			firstPoll = false;
 		}

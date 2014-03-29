@@ -4,12 +4,12 @@
 
     <header
         android:fragment="com.appsofawesome.soundcontrol.SettingsActivity$GeneralPreferenceFragment"
-        android:title="@string/pref_header_general" />
+        android:title="Feature master switches"/>
     <header
         android:fragment="com.appsofawesome.soundcontrol.SettingsActivity$NotificationPreferenceFragment"
-        android:title="@string/pref_header_notifications" />
+        android:title="Volume Settings" />
     <header
         android:fragment="com.appsofawesome.soundcontrol.SettingsActivity$DataSyncPreferenceFragment"
-        android:title="@string/pref_header_data_sync" />
+        android:title="Update Frequency" />
 
 </preference-headers>

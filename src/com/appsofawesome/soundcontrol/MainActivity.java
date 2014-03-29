@@ -10,6 +10,9 @@ package com.appsofawesome.soundcontrol;
 import android.app.Activity;
 //import android.app.ActionBar;
 import android.app.Fragment;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 //import android.content.Context;
 //import android.media.AudioManager;
 import android.os.Bundle;
@@ -37,7 +40,8 @@ public class MainActivity extends Activity {
 			getFragmentManager().beginTransaction()
 			.add(R.id.container, new PlaceholderFragment()).commit();
 		}
-
+		//String preferencesName = getPreferenceManager().getSharedPreferencesName();
+		Utils.context = this;
 
 	}
 
@@ -104,6 +108,12 @@ public class MainActivity extends Activity {
 			((Button) view).setText("test motion sensor");
 			text.setText("Walking: " + walkingLaying[0] + " Laying: " + walkingLaying[1]);
 		}
+	}
+	
+	public void settingsClick(View view) {
+		//intent to go to new activity. 
+		Intent intent = new Intent(this, SettingsActivity.class);
+		startActivity(intent);
 	}
 
 
