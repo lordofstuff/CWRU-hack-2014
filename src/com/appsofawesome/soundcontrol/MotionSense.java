@@ -68,4 +68,9 @@ public class MotionSense implements SensorEventListener {
 	public void onSensorChanged(SensorEvent event) {
 		processedValues.add((float) Math.sqrt((Math.pow(event.values[0], 2) + Math.pow(event.values[1], 2) + Math.pow(event.values[2], 2))));
 	}
+
+	public void pollMotion() {
+		// TODO Auto-generated method stub
+		
+	}
 }
