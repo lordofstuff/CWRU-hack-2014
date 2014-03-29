@@ -11,63 +11,70 @@ import android.media.MediaRecorder;
  */
 public class recorder {
 	//adapted from here: http://stackoverflow.com/questions/8499042/android-audiorecord-example
-	
+
 	public static final int RECORDER_SAMPLERATE = 8000;
 	private static final int RECORDER_CHANNELS = AudioFormat.CHANNEL_IN_MONO;
 	private static final int RECORDER_AUDIO_ENCODING = AudioFormat.ENCODING_PCM_16BIT;
 	private AudioRecord recorder = null;
 	//private Thread recordingThread = null;
 	private boolean isRecording = false;
-	
+
 	int BufferElements2Rec = 1024; // want to play 2048 (2K) since 2 bytes we use only 1024
 	int BytesPerElement = 2; // 2 bytes in 16bit format
-	
-	
-	public short[] record(double seconds) {
-		AudioRecord recorder = startRecording();
-		//wait one seconds ish
+
+
+	public synchronized short[] record(double seconds) {
+		final short[] array = new short[RECORDER_SAMPLERATE * getRecordTime()];
+		Thread thread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				AudioRecord recorder = startRecording();
+				//wait one seconds ish
+				
+				stopRecording();
+				recorder.read(array, 0, array.length);
+			}
+		});
+		thread.start();
 		try {
 			wait(getRecordTime());
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			//e.printStackTrace();
 		}
-		stopRecording();
-		short[] array = new short[RECORDER_SAMPLERATE * getRecordTime()];
-		recorder.read(array, 0, array.length);
 		return array;
 	}
-	
+
 	private int getRecordTime() {
-		
+
 		return 1000; //1 second
 	}
 
 	private AudioRecord startRecording() {
-	    recorder = new AudioRecord(MediaRecorder.AudioSource.MIC,
-	            RECORDER_SAMPLERATE, RECORDER_CHANNELS,
-	            RECORDER_AUDIO_ENCODING, BufferElements2Rec * BytesPerElement);
+		recorder = new AudioRecord(MediaRecorder.AudioSource.MIC,
+				RECORDER_SAMPLERATE, RECORDER_CHANNELS,
+				RECORDER_AUDIO_ENCODING, BufferElements2Rec * BytesPerElement);
 
-	    recorder.startRecording();
-	    isRecording = true;
-//	    recordingThread = new Thread(new Runnable() {
-//	        public void run() {
-//	            writeAudioDataToFile();
-//	        }
-//	    }, "AudioRecorder Thread");
-//	    recordingThread.start();
-	    return recorder;
+		recorder.startRecording();
+		isRecording = true;
+		//	    recordingThread = new Thread(new Runnable() {
+		//	        public void run() {
+		//	            writeAudioDataToFile();
+		//	        }
+		//	    }, "AudioRecorder Thread");
+		//	    recordingThread.start();
+		return recorder;
 	}
-	
+
 	private void stopRecording() {
-	    // stops the recording activity
-	    if (null != recorder) {
-	        isRecording = false;
-	        recorder.stop();
-	        recorder.release();
-	        recorder = null;
-	        //recordingThread = null;
-	    }
+		// stops the recording activity
+		if (null != recorder) {
+			isRecording = false;
+			recorder.stop();
+			recorder.release();
+			recorder = null;
+			//recordingThread = null;
+		}
 	}
 
 }
