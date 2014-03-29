@@ -17,31 +17,30 @@ public class recorder {
 	private static final int RECORDER_AUDIO_ENCODING = AudioFormat.ENCODING_PCM_16BIT;
 	private AudioRecord recorder = null;
 	//private Thread recordingThread = null;
-	private boolean isRecording = false;
-	private Object lock = new Object();
+	//private boolean isRecording = false;
+	
 
 	int BufferElements2Rec = 8000;//1024; // want to play 2048 (2K) since 2 bytes we use only 1024
 	int BytesPerElement = 2; // 2 bytes in 16bit format
+	private double time;
 
 
 	public synchronized short[] record(double seconds) {
+		time = seconds;
 		final short[] array = new short[RECORDER_SAMPLERATE * getRecordTime() /1000];
 		AudioRecord recorder = startRecording();
 		//wait one seconds ish
 		try {
 			wait(getRecordTime());
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			//e.printStackTrace();
 		}
 		recorder.read(array, 0, array.length);
 		stopRecording();
-		
 		return array;
 	}
 
 	private int getRecordTime() {
-		return 1000; //1 second
+		return (int) (time * 1000); //1 second
 	}
 
 	private AudioRecord startRecording() {
@@ -50,7 +49,7 @@ public class recorder {
 				RECORDER_AUDIO_ENCODING, BufferElements2Rec * BytesPerElement);
 
 		recorder.startRecording();
-		isRecording = true;
+//		isRecording = true;
 		//	    recordingThread = new Thread(new Runnable() {
 		//	        public void run() {
 		//	            writeAudioDataToFile();
@@ -63,7 +62,7 @@ public class recorder {
 	private void stopRecording() {
 		// stops the recording activity
 		if (null != recorder) {
-			isRecording = false;
+//			isRecording = false;
 			recorder.stop();
 			recorder.release();
 			recorder = null;

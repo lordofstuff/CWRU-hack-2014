@@ -1,0 +1,15 @@
+<preference-headers xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <!-- These settings headers are only used on tablets. -->
+
+    <header
+        android:fragment="com.appsofawesome.soundcontrol.SettingsActivity$GeneralPreferenceFragment"
+        android:title="Feature master switches"/>
+    <header
+        android:fragment="com.appsofawesome.soundcontrol.SettingsActivity$NotificationPreferenceFragment"
+        android:title="Volume Settings" />
+    <header
+        android:fragment="com.appsofawesome.soundcontrol.SettingsActivity$DataSyncPreferenceFragment"
+        android:title="Update Frequency" />
+
+</preference-headers>

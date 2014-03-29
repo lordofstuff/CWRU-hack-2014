@@ -17,6 +17,8 @@ public class MotionSense implements SensorEventListener {
 	private Sensor mAccelerometer;
 	private ArrayList<Float> processedValues;
 	public boolean recording = false;
+	boolean firstPoll = true;
+	boolean laying = false;
 
 	public synchronized void pollMotion(Context context) {
 		sm = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
@@ -36,26 +38,29 @@ public class MotionSense implements SensorEventListener {
 			array[i++] = f;
 		}
 		derive(array);
-		Log.d(TAG, "motion sensing data length: " + array.length);
+		//Log.d(TAG, "motion sensing data length: " + array.length);
 		recording = false;
 		return array;
 	}
 
 	private void derive(float[] array) {
+		if (array.length == 0) {
+			return;
+		}
 		for (int i = 0; i < array.length -1; i++) {
 			array[i] = array[i + 1] - array[i];
 		}
 		array[array.length-1] = array[array.length -2];
 	}
 
-	public boolean isWalking(float[] derived) {
+	public boolean[] isWalking(float[] derived) {
 		for (float f: derived) {
-			Log.d(TAG, "derived accel: " + f);
+			//Log.d(TAG, "derived accel: " + f);
 			if (f > threshold) {
-				return true;
+				return new boolean[] {true, laying};
 			}
 		}
-		return false;
+		return new boolean[] {false, laying};
 	}
 
 	@Override
@@ -66,6 +71,16 @@ public class MotionSense implements SensorEventListener {
 
 	@Override
 	public void onSensorChanged(SensorEvent event) {
+		if (firstPoll) {
+			//check if it is laying flat on the front or back
+			float tolerance = Utils.getLevelTolerance();
+			if (Math.abs(event.values[0]) < tolerance && Math.abs(event.values[1]) < tolerance 
+					&& Math.abs(event.values[2]) > 9.81 - tolerance && Math.abs(event.values[2]) < 9.81 + tolerance) {
+				laying = true;
+				//keep it from detecting anything else?
+			}
+			firstPoll = false;
+		}
 		processedValues.add((float) Math.sqrt((Math.pow(event.values[0], 2) + Math.pow(event.values[1], 2) + Math.pow(event.values[2], 2))));
 	}
 }

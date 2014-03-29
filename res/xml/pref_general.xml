@@ -1,0 +1,18 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key='laying_switch'
+        android:summary="React based on phone laying horizontally. "
+        android:title="React to phone laying down" />
+
+    <!--
+         NOTE: Hide buttons to simplify the UI. Users can touch outside the dialog to
+         dismiss it.
+    -->
+    <!-- NOTE: ListPreference's summary should be set to its value by the activity code. -->
+    <CheckBoxPreference android:summary="React to walking." android:title="Walking Switch" android:key="walking_switch"/>
+    <CheckBoxPreference android:summary="React to ambient Noise Levels." android:title="Ambient Noise Level" android:key="sound_level_switch"/>
+    <CheckBoxPreference android:summary="React to high vs. low frequency ambient noise. " android:title="React to Frequency" android:key="frequency_switch"/>
+
+</PreferenceScreen>
