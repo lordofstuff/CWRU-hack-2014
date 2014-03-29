@@ -10,12 +10,13 @@ import android.media.MediaRecorder;
  *
  */
 public class recorder {
+	//adapted from here: http://stackoverflow.com/questions/8499042/android-audiorecord-example
 	
 	public static final int RECORDER_SAMPLERATE = 8000;
 	private static final int RECORDER_CHANNELS = AudioFormat.CHANNEL_IN_MONO;
 	private static final int RECORDER_AUDIO_ENCODING = AudioFormat.ENCODING_PCM_16BIT;
 	private AudioRecord recorder = null;
-	private Thread recordingThread = null;
+	//private Thread recordingThread = null;
 	private boolean isRecording = false;
 	
 	int BufferElements2Rec = 1024; // want to play 2048 (2K) since 2 bytes we use only 1024
@@ -23,11 +24,26 @@ public class recorder {
 	
 	
 	public short[] record(double seconds) {
-		return null;
+		AudioRecord recorder = startRecording();
+		//wait one seconds ish
+		try {
+			wait(getRecordTime());
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			//e.printStackTrace();
+		}
+		stopRecording();
+		short[] array = new short[RECORDER_SAMPLERATE * getRecordTime()];
+		recorder.read(array, 0, array.length);
+		return array;
 	}
 	
-	private void startRecording() {
+	private int getRecordTime() {
+		
+		return 1000; //1 second
+	}
 
+	private AudioRecord startRecording() {
 	    recorder = new AudioRecord(MediaRecorder.AudioSource.MIC,
 	            RECORDER_SAMPLERATE, RECORDER_CHANNELS,
 	            RECORDER_AUDIO_ENCODING, BufferElements2Rec * BytesPerElement);
@@ -40,6 +56,7 @@ public class recorder {
 //	        }
 //	    }, "AudioRecorder Thread");
 //	    recordingThread.start();
+	    return recorder;
 	}
 	
 	private void stopRecording() {
@@ -49,7 +66,7 @@ public class recorder {
 	        recorder.stop();
 	        recorder.release();
 	        recorder = null;
-	        recordingThread = null;
+	        //recordingThread = null;
 	    }
 	}
 
