@@ -3,17 +3,18 @@ package com.appsofawesome.soundcontrol;
 import java.lang.reflect.Field;
 
 //import statements for xposed framework
-import ...android.xposed.XposedHelpers.findAndHookMethod;
-import ...android.xposed.IXposedHookLoadPackage;
-import ...android.xposed.XC_MethodHook;
-import ...android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
+import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
+import de.robv.android.xposed.IXposedHookLoadPackage;
+import de.robv.android.xposed.XC_MethodHook;
+import de.robv.android.xposed.XposedBridge;
+import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 
 import android.media.Ringtone;
 import android.media.MediaPlayer;
 import android.content.res.AssetFileDescriptor;
 import java.io.FileInputStream;
 
-public class ToneFileRetrieve implements IXposedLoadPackage{
+public class ToneFileRetrieve implements IXposedHookLoadPackage{
 	
 	//xposed framework:
 		// from the Ringtone: 1. get private field Media Player
@@ -21,8 +22,8 @@ public class ToneFileRetrieve implements IXposedLoadPackage{
 		//					  3. from ASF, create FileInputStream
 		//					  4. read bytes directly from FIS
 	
-	private Ringtone tone;
-	private FileInputStream fis;
+	private static Ringtone tone;
+	private static FileInputStream fis;
 	
 	public static void setRingtone(Ringtone r){ tone = r; }
 	
@@ -39,18 +40,19 @@ public class ToneFileRetrieve implements IXposedLoadPackage{
 		
 		XposedBridge.log("we are in content.res!");
 		//Ringtone ringtone from Ringtone[] tones
-		Field f = ringtone.getClass().getDeclaredField("mAudio");
+		
+		Field f = tone.getClass().getDeclaredField("mAudio");
 		f.setAccessible(true);
-		MediaPlayer mp = (MediaPlayer)f.get(ringtone);
+		MediaPlayer mp = (MediaPlayer)f.get(tone);
 						
-		findAndHookMethod("android.content.res.AssetFileDescriptor", lpparam.classLoader, "createInputStream", new XC_MethodHook{
+		findAndHookMethod("android.content.res.AssetFileDescriptor", lpparam.classLoader, "createInputStream", new XC_MethodHook(){
 			@Override
 			protected void beforeHookedMethod(MethodHookParam param) throws Throwable{
 				
 			}
 			@Override
 			protected void afterHookedMethod(MethodHookParam param) throws Throwable{
-				fis = param.getResult(); // this is a guess: where is autocomplete?????
+				fis = (FileInputStream) param.getResult(); // this is a guess: where is autocomplete?????
 				//call another method and pass fis to it
 				
 			}
