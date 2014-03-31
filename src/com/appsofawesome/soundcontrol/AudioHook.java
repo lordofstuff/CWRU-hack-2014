@@ -6,6 +6,7 @@ import java.lang.reflect.Field;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.RingtoneManager;
 
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
@@ -92,10 +93,15 @@ public class AudioHook implements IXposedHookLoadPackage{
 //			if (isRingtoneChangeOn()) {
 				XposedBridge.log("This is where I would change the ringtone.");
 				// http://grepcode.com/file/repository.grepcode.com/java/ext/com.google.android/android-apps/4.4.2_r1/com/android/phone/CallNotifier.java#CallNotifier.onCustomRingQueryComplete%28com.android.internal.telephony.Connection%29
-				Field r = findField(findClass("com.android.phone.CallNotifier", ((Context) param.thisObject).getClassLoader()), "mRinger");
+				Field r = findField(findClass("com.android.phone.CallNotifier", ((Context) (param.thisObject)).getClassLoader()), "mRinger");
 				//			Ringer r = mRinger;
 				//			r.setCustomRingtoneUri(ci.contactRingtoneUri);
-				findMethod
+				//r.
+//				try {
+//				       RingtoneManager.setActualDefaultRingtoneUri((Context)(param.thisObject), RingtoneManager.TYPE_RINGTONE, new Uri());
+//				   } catch (Throwable t) {
+//				       //Log.d(TAG, "catch exception");
+//				   }
 //			}
 		}
 
@@ -122,6 +128,10 @@ public class AudioHook implements IXposedHookLoadPackage{
 			}		
 		}	
 	};
+
+	
+
+	
 
 //	protected boolean isRingtoneChangeOn() {
 //		return prefs.getBoolean("frequency_switch", true);
